@@ -13,8 +13,17 @@ from ..models import (
 )
 
 
+def _resolve_graph_language(payload: dict) -> str:
+    return payload.get("language") or "unknown"
+
+
+def _resolve_service_root_dir(raw_service: dict) -> str:
+    return raw_service.get("rootDir") or raw_service.get("relativeRootDir") or ""
+
+
 def load_service_graph(graph_path: Path) -> ServiceGraph:
     payload = json.loads(graph_path.read_text())
+    graph_language = _resolve_graph_language(payload)
 
     services: list[GraphService] = []
     for raw_service in payload.get("services", []):
@@ -67,7 +76,7 @@ def load_service_graph(graph_path: Path) -> ServiceGraph:
             GraphService(
                 id=raw_service["id"],
                 name=raw_service["name"],
-                root_dir=raw_service["rootDir"],
+                root_dir=_resolve_service_root_dir(raw_service),
                 aliases=list(raw_service.get("aliases", [])),
                 methods=methods,
                 classes=classes,
@@ -80,6 +89,6 @@ def load_service_graph(graph_path: Path) -> ServiceGraph:
         version=payload["version"],
         generated_at=payload["generatedAt"],
         input_dir=payload["inputDir"],
-        language=payload["language"],
+        language=graph_language,
         services=services,
     )
