@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kg-vector-indexer"
+version = "0.1.0"
+description = "Reusable vector indexer for microservice-kg graph output"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "chromadb>=0.5.0",
+]
+
+[project.optional-dependencies]
+embeddings = [
+  "sentence-transformers>=3.0.0",
+]
+
+[project.scripts]
+kg-index = "kg_vector_indexer.cli:index_main"
+kg-query = "kg_vector_indexer.cli:query_main"
+kg-retrieve = "kg_vector_indexer.cli:retrieve_main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
